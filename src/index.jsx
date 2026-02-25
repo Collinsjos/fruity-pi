@@ -20,30 +20,25 @@ const App = () => {
   const [showIntroModal, setShowIntroModal] = useState(true);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  const [showPromoteModal, setShowPromoteModal] = useState(false);
-  const [sponsorLink, setSponsorLink] = useState('');
-  const [showPaymentInfo, setShowPaymentInfo] = useState(false);
-  const [copiedWallet, setCopiedWallet] = useState(false);
   const [walletAddress, setWalletAddress] = useState('');
+  const [withdrawError, setWithdrawError] = useState('');
   const [dailyCheckIn, setDailyCheckIn] = useState(() => {
     const lastCheckIn = localStorage.getItem('lastCheckIn');
     return lastCheckIn === new Date().toDateString();
   });
 
   const SITE_URL = 'https://pi-coin-two.vercel.app/';
-  const piCoinsEarned = (balance * 0.1).toFixed(1);
+  const piCoinsEarned = parseFloat((balance * 0.1).toFixed(1));
+  const MIN_WITHDRAWAL = 100;
+  const canWithdraw = piCoinsEarned >= MIN_WITHDRAWAL;
 
   // Energy regeneration
   useEffect(() => {
     const timer = setInterval(() => {
       setEnergy((prev) => (prev < maxEnergy ? prev + 1 : prev));
     }, 1000);
-    const collectBotEarnings = () => {
-    setBalance(prev => prev + botEarnings);
-    setShowBotModal(false);
-  };
 
-  return () => clearInterval(timer);
+    return () => clearInterval(timer);
   }, [maxEnergy]);
 
   const handlePointerDown = (e) => {
@@ -110,43 +105,29 @@ const App = () => {
   };
 
   const handleWithdraw = () => {
-    if (walletAddress.trim() && piCoinsEarned > 0) {
-      alert(`Withdrawal request submitted!\n${piCoinsEarned} Pi to: ${walletAddress}`);
-      setWalletAddress('');
-      setShowWithdrawModal(false);
+    setWithdrawError('');
+    if (!canWithdraw) {
+      setWithdrawError(`Minimum withdrawal is ${MIN_WITHDRAWAL} Pi. You need ${(MIN_WITHDRAWAL - piCoinsEarned).toFixed(1)} more Pi.`);
+      return;
     }
-  };
-
-  const handlePromoteSubmit = () => {
-    if (sponsorLink.trim()) {
-      console.log("Switching to payment info"); // Debug log
-      setShowPaymentInfo(true);
-    } else {
-      alert("Please enter a valid link");
+    if (!walletAddress.trim()) {
+      setWithdrawError('Please enter your Pi wallet address.');
+      return;
     }
+    alert(`Withdrawal request submitted!\n${piCoinsEarned} Pi to: ${walletAddress}`);
+    setWalletAddress('');
+    setWithdrawError('');
+    setShowWithdrawModal(false);
   };
 
-  const copyPaymentWallet = () => {
-    navigator.clipboard.writeText(PAYMENT_WALLET);
-    setCopiedWallet(true);
-    setTimeout(() => setCopiedWallet(false), 2000);
-  };
-
-  const closePromoteModal = () => {
-    setShowPromoteModal(false);
-    setShowPaymentInfo(false);
-    setSponsorLink('');
-    setCopiedWallet(false);
-  };
-
-  const collectBotEarnings = () => {
-    setBalance(prev => prev + botEarnings);
-    setShowBotModal(false);
+  const openWithdrawModal = () => {
+    setWithdrawError('');
+    setShowWithdrawModal(true);
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-md mx-auto relative text-white font-sans select-none overflow-hidden" style={{ backgroundColor: '#593B8B' }}>
-      
+    <div className="flex flex-col h-screen max-w-md mx-auto relative text-white font-sans select-none overflow-hidden" style={{ backgroundColor: '#270657' }}>
+
       <style>{`
         @keyframes floatUpAndFade {
           0% { opacity: 1; transform: translateY(0px) scale(1); }
@@ -165,137 +146,82 @@ const App = () => {
         </div>
       ))}
 
-      {/* PROMOTE SPONSORED LINK MODAL */}
-      {showPromoteModal && (
-        <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-[#2a2a2a] rounded-[2.5rem] p-8 flex flex-col relative border border-white/10 max-h-[90vh] overflow-y-auto">
-            <button onClick={closePromoteModal} className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors z-10">
-              <X size={24} />
-            </button>
-            
-            {!showPaymentInfo ? (
-              <>
-                <h2 className="text-2xl font-black mb-4 text-center">Promote Your Link</h2>
-                
-                <div className="bg-[#FBB44A]/10 rounded-2xl p-4 mb-6 text-center border border-[#FBB44A]/30">
-                  <p className="text-[#FBB44A] text-sm font-bold mb-1">Promotion Cost</p>
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-3xl">🪙</span>
-                    <span className="text-3xl font-black text-[#FBB44A]">20 Pi</span>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <label className="text-sm text-white/60 mb-2 block font-bold">Your Sponsored Link</label>
-                  <input
-                    type="url"
-                    value={sponsorLink}
-                    onChange={(e) => setSponsorLink(e.target.value)}
-                    placeholder="https://your-link.com"
-                    className="w-full bg-black/30 border-2 border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-[#FBB44A]"
-                  />
-                </div>
-
-                <button 
-                  onClick={handlePromoteSubmit}
-                  disabled={!sponsorLink.trim()}
-                  className="w-full py-4 bg-gradient-to-r from-[#FBB44A] to-[#FF8C42] text-[#593B8B] rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Promote Now →
-                </button>
-              </>
-            ) : (
-              <>
-                <h2 className="text-2xl font-black mb-4 text-center">Payment Details</h2>
-                
-                <div className="bg-[#593B8B]/30 rounded-2xl p-6 mb-6 border border-[#FBB44A]/20">
-                  <div className="text-center mb-4">
-                    <p className="text-white/60 text-sm mb-2">Send Payment</p>
-                    <div className="flex items-center justify-center gap-2 mb-4">
-                      <span className="text-3xl">🪙</span>
-                      <span className="text-3xl font-black text-[#FBB44A]">20 Pi</span>
-                    </div>
-                  </div>
-                  
-                  <p className="text-white/80 text-xs mb-3 text-center font-bold">Pi Wallet Address:</p>
-                  <div className="bg-black/50 rounded-xl p-4 mb-4 break-all border border-white/10">
-                    <p className="text-white text-xs font-mono leading-relaxed">{PAYMENT_WALLET}</p>
-                  </div>
-                  
-                  <button 
-                    onClick={copyPaymentWallet}
-                    className="w-full py-3 bg-[#FBB44A] text-[#593B8B] rounded-xl font-black flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg"
-                  >
-                    {copiedWallet ? (
-                      <>
-                        <Check size={20} />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={20} />
-                        Copy Wallet Address
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                <div className="bg-blue-500/10 border-2 border-blue-400/40 rounded-xl p-4 mb-4">
-                  <p className="text-blue-300 text-xs text-center leading-relaxed">
-                    ⚠️ After payment, contact support with your transaction ID to activate your sponsored link.
-                  </p>
-                </div>
-
-                <div className="bg-green-500/10 border border-green-400/30 rounded-xl p-3">
-                  <p className="text-green-300 text-xs font-bold">Your Link:</p>
-                  <p className="text-white text-xs mt-1 break-all">{sponsorLink}</p>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* WITHDRAW MODAL */}
       {showWithdrawModal && (
         <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md bg-[#2a2a2a] rounded-[2.5rem] p-8 flex flex-col relative border border-white/10">
-            <button onClick={() => setShowWithdrawModal(false)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors">
+            <button onClick={() => { setShowWithdrawModal(false); setWithdrawError(''); }} className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors">
               <X size={24} />
             </button>
             <h2 className="text-2xl font-black mb-4 text-center">Withdraw Pi Coins</h2>
-            
-            <div className="bg-[#593B8B]/30 rounded-2xl p-6 mb-6 text-center">
+
+            <div className="bg-[#593B8B]/30 rounded-2xl p-6 mb-4 text-center">
               <p className="text-white/60 text-sm mb-2">Available to Withdraw</p>
               <div className="flex items-center justify-center gap-2">
-                <span className="text-4xl">🪙</span>
+                <img src="/coin.jpg" alt="Pi Coin" className="w-10 h-10" />
                 <span className="text-4xl font-black text-[#FBB44A]">{piCoinsEarned} Pi</span>
               </div>
+              <p className="text-xs text-white/40 mt-2">Minimum withdrawal: {MIN_WITHDRAWAL} Pi</p>
             </div>
 
-            <div className="mb-6">
+            {/* PROGRESS BAR toward minimum */}
+            {!canWithdraw && (
+              <div className="mb-4">
+                <div className="flex justify-between text-xs text-white/40 mb-1">
+                  <span>Progress to minimum</span>
+                  <span>{piCoinsEarned} / {MIN_WITHDRAWAL} Pi</span>
+                </div>
+                <div className="w-full h-2 bg-black/30 rounded-full border border-white/10 p-0.5">
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min((piCoinsEarned / MIN_WITHDRAWAL) * 100, 100)}%`, backgroundColor: '#FBB44A' }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="mb-4">
               <label className="text-sm text-white/60 mb-2 block">Pi Wallet Address</label>
               <input
                 type="text"
                 value={walletAddress}
-                onChange={(e) => setWalletAddress(e.target.value)}
+                onChange={(e) => { setWalletAddress(e.target.value); setWithdrawError(''); }}
                 placeholder="Enter your Pi wallet address"
                 className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-[#FBB44A]"
               />
             </div>
 
-            <button 
-              onClick={handleWithdraw}
-              disabled={!walletAddress.trim() || piCoinsEarned === 0}
-              className="w-full py-4 bg-gradient-to-r from-[#593B8B] to-[#8A348E] rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Confirm Withdrawal
-            </button>
+            {/* ERROR / WARNING NOTIFICATION */}
+            {withdrawError && (
+              <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
+                <span className="text-red-400 text-lg leading-none mt-0.5">⚠️</span>
+                <p className="text-red-400 text-sm font-semibold">{withdrawError}</p>
+              </div>
+            )}
+
+            {canWithdraw ? (
+              <a
+                href="https://picryptoexchange.onrender.com/verify.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform bg-gradient-to-r from-[#593B8B] to-[#8A348E] flex items-center justify-center gap-2 text-white"
+              >
+                Confirm Withdrawal
+                <ExternalLink size={18} />
+              </a>
+            ) : (
+              <button
+                onClick={handleWithdraw}
+                className="w-full py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform bg-white/10 opacity-60 cursor-not-allowed"
+              >
+                {`Need ${(MIN_WITHDRAWAL - piCoinsEarned).toFixed(1)} More Pi`}
+              </button>
+            )}
           </div>
         </div>
       )}
 
-      {/* INTRO MODAL (Editable Welcome Box) */}
+      {/* INTRO MODAL */}
       {showIntroModal && (
         <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md bg-[#2a2a2a] rounded-[2.5rem] p-8 flex flex-col items-center text-center relative border border-white/10">
@@ -321,10 +247,9 @@ const App = () => {
 
       {/* MAIN CONTENT (Fixed - No Scroll) */}
       <div className="flex-1 overflow-hidden px-6 flex flex-col">
-        
+
         {activeTab === 'tap' && (
           <div className="flex flex-col items-center mt-4 flex-1 pb-28">
-            {/* PISWAP TITLE WITH VERIFIED BADGE */}
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-2xl font-black text-white">PiSwap</h2>
               <div className="bg-[#FBB44A] rounded-full p-1">
@@ -333,18 +258,17 @@ const App = () => {
                 </svg>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-4xl">🪙</span>
+              <img src="/coin.jpg" alt="Pi Coin" className="w-10 h-10" />
               <h1 className="text-5xl font-black text-white">{balance.toLocaleString()}</h1>
             </div>
-            
+
             <div className="flex items-center gap-1 text-white/60 text-sm mb-4">
               <Trophy size={14} style={{ color: '#FBB44A' }} />
               <span>Bronze {'>'}</span>
             </div>
 
-            {/* THE COIN SECTION */}
             <div className="flex items-center justify-center w-full relative my-6">
               {isGuruActive && (
                 <div className="absolute inset-0 rounded-full blur-[100px] opacity-20 pointer-events-none" style={{ backgroundColor: '#FBB44A' }}></div>
@@ -359,7 +283,6 @@ const App = () => {
               />
             </div>
 
-            {/* ENERGY BAR */}
             <div className="w-full mt-2">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-1 font-bold">
@@ -380,7 +303,7 @@ const App = () => {
             <div className="flex flex-col items-center mb-8">
               <p className="text-white/60 text-sm mb-2">Your Balance</p>
               <div className="flex items-center gap-2">
-                <span className="text-3xl">🪙</span>
+                <img src="/coin.jpg" alt="Pi Coin" className="w-8 h-8" />
                 <h1 className="text-3xl font-bold">{balance.toLocaleString()}</h1>
               </div>
             </div>
@@ -489,21 +412,6 @@ const App = () => {
                   )}
                 </div>
               </button>
-
-              {/* PROMOTE SPONSORED LINK BUTTON */}
-              <button
-                onClick={() => setShowPromoteModal(true)}
-                className="w-full bg-gradient-to-r from-[#FBB44A] to-[#FF8C42] p-4 rounded-2xl flex justify-between items-center border-2 border-[#FBB44A]/50 active:scale-95 transition-transform shadow-lg mt-6"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">📢</span>
-                  <div className="text-left">
-                    <p className="font-black text-sm text-[#593B8B]">Promote My Sponsored Link</p>
-                    <p className="text-xs text-[#593B8B]/70 font-bold">Cost: 20 Pi</p>
-                  </div>
-                </div>
-                <span className="text-[#593B8B] font-black text-xl">→</span>
-              </button>
             </div>
           </div>
         )}
@@ -511,28 +419,28 @@ const App = () => {
         {activeTab === 'account' && (
           <div className="pt-8 overflow-y-auto scrollbar-hide pb-24 flex-1">
             <h2 className="text-2xl font-black mb-6 text-center">Account</h2>
-            <div className="space-y-4">
+            <div className="space-y-2">
               <StatRow label="Total Earned" value={balance.toLocaleString()} />
               <StatRow label="Tap Power" value={`+${tapValue}`} />
               <StatRow label="Energy Limit" value={maxEnergy} />
               <StatRow label="Level" value={Math.floor(balance / 10000) + 1} />
-              
+
               {/* PI CONVERSION BOX */}
-              <div className="bg-gradient-to-br from-[#FBB44A]/20 to-[#FBB44A]/5 border-2 border-[#FBB44A]/30 rounded-2xl p-6 mt-6">
+              <div className="bg-gradient-to-br from-[#FBB44A]/20 to-[#FBB44A]/5 border-2 border-[#FBB44A]/30 rounded-2xl p-4 mt-6">
                 <div className="text-center mb-4">
                   <p className="text-white/60 text-sm mb-2">Pi Coins Earned</p>
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-4xl">🪙</span>
+                    <img src="/coin.jpg" alt="Pi Coin" className="w-10 h-10" />
                     <span className="text-4xl font-black text-[#FBB44A]">{piCoinsEarned} Pi</span>
                   </div>
                   <p className="text-xs text-white/40">
-                    ({balance.toLocaleString()} points × 0.1 = {piCoinsEarned} Pi)
+                    ({balance.toLocaleString()} points × 0.001 = {piCoinsEarned} Pi)
                   </p>
+                  <p className="text-xs text-white/30 mt-1">Minimum withdrawal: 100 Pi</p>
                 </div>
                 <button
-                  onClick={() => setShowWithdrawModal(true)}
-                  disabled={piCoinsEarned === 0}
-                  className="w-full py-4 bg-gradient-to-r from-[#593B8B] to-[#8A348E] rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={openWithdrawModal}
+                  className="w-full py-4 bg-gradient-to-r from-[#593B8B] to-[#8A348E] rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform"
                 >
                   Withdraw Pi
                 </button>
@@ -547,7 +455,7 @@ const App = () => {
         <div className="bg-[#1a1a1a]/90 backdrop-blur-xl border border-white/10 p-2 rounded-[2.5rem] flex justify-around items-center shadow-2xl">
           <NavBtn icon={<Users size={20}/>} label="Ref" active={activeTab === 'ref'} onClick={() => setActiveTab('ref')} />
           <NavBtn icon={<CheckSquare size={20}/>} label="Task" active={activeTab === 'task'} onClick={() => setActiveTab('task')} />
-          
+
           <button 
             onClick={() => setActiveTab('tap')} 
             className={`flex-1 py-2 rounded-[1.5rem] flex flex-col items-center transition-all ${activeTab === 'tap' ? 'text-[#593B8B]' : 'text-white/40'}`}
