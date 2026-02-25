@@ -27,7 +27,7 @@ const App = () => {
   });
 
   const SITE_URL = 'https://pi-coin-two.vercel.app/';
-  const piCoinsEarned = Math.floor(balance / 10000) * 10;
+  const piCoinsEarned = (balance * 0.001).toFixed(1);
 
   // Energy regeneration
   useEffect(() => {
@@ -394,7 +394,7 @@ const App = () => {
                     <span className="text-4xl font-black text-[#FBB44A]">{piCoinsEarned} Pi</span>
                   </div>
                   <p className="text-xs text-white/40">
-                    ({balance.toLocaleString()} points ÷ 10,000 × 10)
+                    ({balance.toLocaleString()} points × 0.001 = {piCoinsEarned} Pi)
                   </p>
                 </div>
                 <button
