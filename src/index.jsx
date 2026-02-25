@@ -173,7 +173,7 @@ const App = () => {
 
               {/* COIN IMAGE */}
               <img 
-                src="/coin.png" 
+                src="./coin.png" 
                 onPointerDown={handlePointerDown}
                 className="w-72 h-72 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer select-none"
                 alt="Pi Coin" 
