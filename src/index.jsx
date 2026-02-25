@@ -119,7 +119,10 @@ const App = () => {
 
   const handlePromoteSubmit = () => {
     if (sponsorLink.trim()) {
+      console.log("Switching to payment info"); // Debug log
       setShowPaymentInfo(true);
+    } else {
+      alert("Please enter a valid link");
     }
   };
 
@@ -142,7 +145,7 @@ const App = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-md mx-auto relative text-white font-sans select-none overflow-hidden" style={{ backgroundColor: '#3b0a6c' }}>
+    <div className="flex flex-col h-screen max-w-md mx-auto relative text-white font-sans select-none overflow-hidden" style={{ backgroundColor: '#593B8B' }}>
       
       <style>{`
         @keyframes floatUpAndFade {
