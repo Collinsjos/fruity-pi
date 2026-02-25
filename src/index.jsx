@@ -135,7 +135,17 @@ const App = () => {
       <div className="flex-1 overflow-hidden px-6 flex flex-col">
         
         {activeTab === 'tap' && (
-          <div className="flex flex-col items-center mt-4 flex-1 pb-20">
+          <div className="flex flex-col items-center mt-4 flex-1 pb-28">
+            {/* PISWAP TITLE WITH VERIFIED BADGE */}
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-2xl font-black text-white">PiSwap</h2>
+              <div className="bg-[#FBB44A] rounded-full p-1">
+                <svg className="w-4 h-4 text-[#593B8B]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                </svg>
+              </div>
+            </div>
+            
             <div className="flex items-center gap-2 mb-1">
               <div className="w-8 h-8 rounded-full shadow-[0_0_15px_#FBB44A]" style={{ backgroundColor: '#FBB44A' }}></div>
               <h1 className="text-5xl font-black text-white">{balance.toLocaleString()}</h1>
@@ -147,7 +157,7 @@ const App = () => {
             </div>
 
             {/* THE COIN SECTION */}
-            <div className="flex items-center justify-center w-full relative my-8">
+            <div className="flex items-center justify-center w-full relative my-6">
               {isGuruActive && (
                 <div className="absolute inset-0 rounded-full blur-[100px] opacity-20 pointer-events-none" style={{ backgroundColor: '#FBB44A' }}></div>
               )}
@@ -155,7 +165,7 @@ const App = () => {
                 src="/coin.png" 
                 onPointerDown={handlePointerDown}
                 onTouchStart={handlePointerDown}
-                className="w-56 h-56 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer relative z-10" 
+                className="w-72 h-72 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer relative z-10" 
                 alt="Pi" 
                 draggable="false" 
               />
