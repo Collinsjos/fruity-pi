@@ -135,7 +135,7 @@ const App = () => {
       <div className="flex-1 overflow-hidden px-6 flex flex-col">
         
         {activeTab === 'tap' && (
-          <div className="flex flex-col items-center mt-4 flex-1 justify-between pb-24">
+          <div className="flex flex-col items-center mt-4 flex-1 pb-28">
             <div className="flex items-center gap-2 mb-1">
               <div className="w-8 h-8 rounded-full shadow-[0_0_15px_#FBB44A]" style={{ backgroundColor: '#FBB44A' }}></div>
               <h1 className="text-5xl font-black text-white">{balance.toLocaleString()}</h1>
@@ -147,7 +147,7 @@ const App = () => {
             </div>
 
             {/* THE COIN SECTION */}
-            <div className="flex-1 flex items-center justify-center w-full relative min-h-[240px]">
+            <div className="flex items-center justify-center w-full relative my-6">
               {isGuruActive && (
                 <div className="absolute inset-0 rounded-full blur-[100px] opacity-20 pointer-events-none" style={{ backgroundColor: '#FBB44A' }}></div>
               )}
