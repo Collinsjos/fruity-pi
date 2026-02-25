@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { 
   Zap, Trophy, Users, CheckSquare, 
-  Rocket, BarChart3, BatteryCharging, Hand, Flame, X 
+  Rocket, User, BatteryCharging, Hand, Flame, X, Copy, Check, ExternalLink 
 } from 'lucide-react';
 
 const App = () => {
@@ -18,6 +18,16 @@ const App = () => {
   const [isGuruActive, setIsGuruActive] = useState(false);
   const [clicks, setClicks] = useState([]);
   const [showIntroModal, setShowIntroModal] = useState(true);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [dailyCheckIn, setDailyCheckIn] = useState(() => {
+    const lastCheckIn = localStorage.getItem('lastCheckIn');
+    return lastCheckIn === new Date().toDateString();
+  });
+
+  const SITE_URL = 'https://pi-coin-two.vercel.app/';
+  const piCoinsEarned = Math.floor(balance / 10000) * 10;
 
   // Energy regeneration
   useEffect(() => {
@@ -81,13 +91,35 @@ const App = () => {
     }
   };
 
+  const copyReferralLink = () => {
+    navigator.clipboard.writeText(SITE_URL);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleDailyCheckIn = () => {
+    if (!dailyCheckIn) {
+      setBalance(prev => prev + 1000);
+      setDailyCheckIn(true);
+      localStorage.setItem('lastCheckIn', new Date().toDateString());
+    }
+  };
+
+  const handleWithdraw = () => {
+    if (walletAddress.trim() && piCoinsEarned > 0) {
+      alert(`Withdrawal request submitted!\n${piCoinsEarned} Pi to: ${walletAddress}`);
+      setWalletAddress('');
+      setShowWithdrawModal(false);
+    }
+  };
+
   const collectBotEarnings = () => {
     setBalance(prev => prev + botEarnings);
     setShowBotModal(false);
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-md mx-auto relative text-white font-sans select-none overflow-hidden" style={{ backgroundColor: '#270657' }}>
+    <div className="flex flex-col h-screen max-w-md mx-auto relative text-white font-sans select-none overflow-hidden" style={{ backgroundColor: '#593B8B' }}>
       
       <style>{`
         @keyframes floatUpAndFade {
@@ -106,6 +138,45 @@ const App = () => {
           +{click.val}
         </div>
       ))}
+
+      {/* WITHDRAW MODAL */}
+      {showWithdrawModal && (
+        <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-[#2a2a2a] rounded-[2.5rem] p-8 flex flex-col relative border border-white/10">
+            <button onClick={() => setShowWithdrawModal(false)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors">
+              <X size={24} />
+            </button>
+            <h2 className="text-2xl font-black mb-4 text-center">Withdraw Pi Coins</h2>
+            
+            <div className="bg-[#593B8B]/30 rounded-2xl p-6 mb-6 text-center">
+              <p className="text-white/60 text-sm mb-2">Available to Withdraw</p>
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-[#FBB44A]" />
+                <span className="text-4xl font-black text-[#FBB44A]">{piCoinsEarned} Pi</span>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="text-sm text-white/60 mb-2 block">Pi Wallet Address</label>
+              <input
+                type="text"
+                value={walletAddress}
+                onChange={(e) => setWalletAddress(e.target.value)}
+                placeholder="Enter your Pi wallet address"
+                className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-[#FBB44A]"
+              />
+            </div>
+
+            <button 
+              onClick={handleWithdraw}
+              disabled={!walletAddress.trim() || piCoinsEarned === 0}
+              className="w-full py-4 bg-gradient-to-r from-[#593B8B] to-[#8A348E] rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Confirm Withdrawal
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* INTRO MODAL (Editable Welcome Box) */}
       {showIntroModal && (
@@ -250,9 +321,23 @@ const App = () => {
             <Users size={48} className="mx-auto mb-4 text-[#FBB44A]" />
             <h2 className="text-2xl font-black mb-2">Invite Friends</h2>
             <p className="text-white/60 text-sm mb-6">Get 10% of your friends' earnings!</p>
-            <button className="w-full py-4 bg-[#FBB44A] text-[#593B8B] rounded-2xl font-black shadow-xl active:scale-95 transition-transform">
-              Copy Referral Link
+            <button 
+              onClick={copyReferralLink}
+              className="w-full py-4 bg-[#FBB44A] text-[#593B8B] rounded-2xl font-black shadow-xl active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              {copiedLink ? (
+                <>
+                  <Check size={20} />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy size={20} />
+                  Copy Referral Link
+                </>
+              )}
             </button>
+            <p className="text-xs text-white/40 mt-4 break-all">{SITE_URL}</p>
           </div>
         )}
 
@@ -260,21 +345,66 @@ const App = () => {
           <div className="pt-8 overflow-y-auto scrollbar-hide pb-24 flex-1">
             <h2 className="text-2xl font-black mb-6 text-center">Daily Tasks</h2>
             <div className="space-y-3">
-              <TaskCard title="Join Telegram" reward={5000} />
-              <TaskCard title="Follow Twitter" reward={3000} />
-              <TaskCard title="Daily Check-in" reward={1000} />
+              <TaskCard 
+                title="Join Telegram" 
+                reward={5000} 
+                link="https://t.me/your_telegram_channel"
+              />
+              <TaskCard 
+                title="Follow Twitter" 
+                reward={3000}
+                link="https://twitter.com/your_twitter"
+              />
+              <button
+                onClick={handleDailyCheckIn}
+                disabled={dailyCheckIn}
+                className="w-full bg-black/20 p-4 rounded-2xl flex justify-between items-center border border-white/5 active:scale-95 transition-transform disabled:opacity-50"
+              >
+                <div className="flex items-center gap-3">
+                  <CheckSquare size={20} className="text-[#FBB44A]" />
+                  <span className="font-bold text-sm">Daily Check-in</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  {dailyCheckIn ? (
+                    <span className="text-green-400 text-xs font-bold">✓ Done</span>
+                  ) : (
+                    <span className="text-[#FBB44A] font-black text-sm">+1,000</span>
+                  )}
+                </div>
+              </button>
             </div>
           </div>
         )}
 
-        {activeTab === 'stats' && (
+        {activeTab === 'account' && (
           <div className="pt-8 overflow-y-auto scrollbar-hide pb-24 flex-1">
-            <h2 className="text-2xl font-black mb-6 text-center">Statistics</h2>
+            <h2 className="text-2xl font-black mb-6 text-center">Account</h2>
             <div className="space-y-4">
               <StatRow label="Total Earned" value={balance.toLocaleString()} />
               <StatRow label="Tap Power" value={`+${tapValue}`} />
               <StatRow label="Energy Limit" value={maxEnergy} />
               <StatRow label="Level" value={Math.floor(balance / 10000) + 1} />
+              
+              {/* PI CONVERSION BOX */}
+              <div className="bg-gradient-to-br from-[#FBB44A]/20 to-[#FBB44A]/5 border-2 border-[#FBB44A]/30 rounded-2xl p-6 mt-6">
+                <div className="text-center mb-4">
+                  <p className="text-white/60 text-sm mb-2">Pi Coins Earned</p>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-[#FBB44A]" />
+                    <span className="text-4xl font-black text-[#FBB44A]">{piCoinsEarned} Pi</span>
+                  </div>
+                  <p className="text-xs text-white/40">
+                    ({balance.toLocaleString()} points ÷ 10,000 × 10)
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowWithdrawModal(true)}
+                  disabled={piCoinsEarned === 0}
+                  className="w-full py-4 bg-gradient-to-r from-[#593B8B] to-[#8A348E] rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Withdraw Pi
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -304,7 +434,7 @@ const App = () => {
             <span className="text-[10px] font-black uppercase">Boost</span>
           </button>
 
-          <NavBtn icon={<BarChart3 size={20}/>} label="Stats" active={activeTab === 'stats'} onClick={() => setActiveTab('stats')} />
+          <NavBtn icon={<User size={20}/>} label="Account" active={activeTab === 'account'} onClick={() => setActiveTab('account')} />
         </div>
       </div>
     </div>
@@ -339,16 +469,22 @@ const UpgradeBtn = ({ icon, label, level, cost, canBuy, onClick }) => (
   </button>
 );
 
-const TaskCard = ({ title, reward }) => (
-  <div className="bg-black/20 p-4 rounded-2xl flex justify-between items-center border border-white/5">
+const TaskCard = ({ title, reward, link }) => (
+  <a 
+    href={link}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="block w-full bg-black/20 p-4 rounded-2xl flex justify-between items-center border border-white/5 active:scale-95 transition-transform"
+  >
     <div className="flex items-center gap-3">
       <CheckSquare size={20} className="text-[#FBB44A]" />
       <span className="font-bold text-sm">{title}</span>
     </div>
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       <span className="text-[#FBB44A] font-black text-sm">+{reward.toLocaleString()}</span>
+      <ExternalLink size={16} className="text-white/40" />
     </div>
-  </div>
+  </a>
 );
 
 const StatRow = ({ label, value }) => (
