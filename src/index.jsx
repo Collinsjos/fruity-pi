@@ -179,12 +179,12 @@ const App = () => {
                   alt="Pi Coin" 
                 />
               */}
-              <button 
-                onPointerDown={handlePointerDown}
-                className={`relative w-72 h-72 rounded-full flex items-center justify-center active:scale-95 transition-transform duration-75 border-4
-                  ${isGuruActive 
-                    ? 'bg-gradient-to-br from-red-500 to-[#FBB44A] border-white shadow-[0_0_80px_rgba(251,180,74,0.6)]' 
-                    : 'bg-gradient-to-br from-[#FBD48A] via-[#FBB44A] to-[#D98A1A] border-[#FFF3D4] shadow-[inset_-10px_-10px_20px_rgba(0,0,0,0.3),_0_20px_50px_rgba(0,0,0,0.5)]'
+              <img 
+                  src="/coin.png" 
+                  onPointerDown={handlePointerDown}
+                  className="w-72 h-72 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer"
+                  alt="Pi Coin" 
+                />
                   }
                 `}
               >
