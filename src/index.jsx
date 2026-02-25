@@ -87,7 +87,7 @@ const App = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-md mx-auto relative text-white font-sans select-none overflow-hidden" style={{ backgroundColor: '#593B8B' }}>
+    <div className="flex flex-col h-screen max-w-md mx-auto relative text-white font-sans select-none overflow-hidden" style={{ backgroundColor: '#270657' }}>
       
       <style>{`
         @keyframes floatUpAndFade {
