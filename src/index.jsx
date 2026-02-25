@@ -163,6 +163,7 @@ const App = () => {
             </div>
 
             {/* THE COIN */}
+            {/* THE COIN */}
             <div className="flex-1 flex items-center justify-center w-full relative">
               
               {/* GURU ACTIVE FIRE EFFECT */}
@@ -170,27 +171,14 @@ const App = () => {
                 <div className="absolute inset-0 bg-[#FBB44A] blur-[100px] opacity-20 rounded-full pointer-events-none"></div>
               )}
 
-              {/* TO USE YOUR OWN 3D IMAGE:
-                Delete the <button> below and replace it with:
-                <img 
-                  src="/coin.png" 
-                  onPointerDown={handlePointerDown}
-                  className="w-72 h-72 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer"
-                  alt="Pi Coin" 
-                />
-              */}
+              {/* COIN IMAGE */}
               <img 
-                  src="/coin.png" 
-                  onPointerDown={handlePointerDown}
-                  className="w-72 h-72 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer"
-                  alt="Pi Coin" 
-                />
-                  }
-                `}
-              >
-                <div className="absolute inset-2 rounded-full border border-white/30 pointer-events-none"></div>
-                <span className="text-[140px] font-black text-white drop-shadow-md pointer-events-none">π</span>
-              </button>
+                src="/coin.png" 
+                onPointerDown={handlePointerDown}
+                className="w-72 h-72 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer select-none"
+                alt="Pi Coin" 
+                draggable="false"
+              />
             </div>
 
             {/* ENERGY BAR */}
