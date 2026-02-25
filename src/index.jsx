@@ -162,8 +162,7 @@ const App = () => {
               <span>Bronze {'>'}</span>
             </div>
 
-            {/* THE COIN */}
-            {/* THE COIN */}
+           {/* THE COIN */}
             <div className="flex-1 flex items-center justify-center w-full relative">
               
               {/* GURU ACTIVE FIRE EFFECT */}
@@ -173,9 +172,9 @@ const App = () => {
 
               {/* COIN IMAGE */}
               <img 
-                src="./coin.png" 
+                src="/coin.png" 
                 onPointerDown={handlePointerDown}
-                className="w-72 h-72 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer select-none"
+                className="w-72 h-72 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer select-none relative z-10"
                 alt="Pi Coin" 
                 draggable="false"
               />
