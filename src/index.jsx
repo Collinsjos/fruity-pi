@@ -130,7 +130,7 @@ const App = () => {
       )}
 
       {/* MAIN CONTENT (Scrollable) */}
-      <div className="flex-1 overflow-y-auto pb-40 scrollbar-hide px-6">
+      <div className="flex-1 overflow-y-auto pb-28 scrollbar-hide px-6">
         
         {activeTab === 'tap' && (
           <div className="flex flex-col items-center mt-8 h-full">
@@ -269,7 +269,7 @@ const App = () => {
       </div>
 
       {/* FLOATING ROUNDED MENU BAR */}
-      <div className="absolute bottom-6 left-4 right-4 max-w-md mx-auto z-50 px-2">
+      <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-50">
         <div className="bg-[#1a1a1a]/90 backdrop-blur-xl border border-white/10 p-2 rounded-[2.5rem] flex justify-around items-center shadow-2xl">
           <NavBtn icon={<Users size={20}/>} label="Ref" active={activeTab === 'ref'} onClick={() => setActiveTab('ref')} />
           <NavBtn icon={<CheckSquare size={20}/>} label="Task" active={activeTab === 'task'} onClick={() => setActiveTab('task')} />
