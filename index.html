@@ -6,14 +6,34 @@
     <title>Pi Swap</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Prevents text highlighting when tapping quickly */
-      body {
+      /* 1. Reset and prevent any browser scrolling */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #593B8B; /* Gigas Background */
+        touch-action: none; /* Disables pull-to-refresh and double-tap zoom */
+      }
+
+      /* 2. Prevents the "blue highlight" box when tapping buttons on mobile */
+      * {
         -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
         user-select: none;
+      }
+
+      /* 3. Helper to hide scrollbars if they ever appear */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
     </style>
   </head>
-  <body class="bg-[#252525] text-white overflow-hidden">
+  <body class="bg-[#593B8B] text-white">
     <div id="root"></div>
     <script type="module" src="/src/index.jsx"></script>
   </body>
