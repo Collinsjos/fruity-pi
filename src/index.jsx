@@ -285,31 +285,35 @@ const App = () => {
         )}
       </div>
 
-      {/* --- BOTTOM NAVIGATION BAR --- */}
-      <div className="absolute bottom-4 left-4 right-4 bg-[#1e1e1e] rounded-2xl p-2 flex justify-between border border-[#593B8B] z-40">
-        <button className="flex flex-col items-center flex-1 py-2 text-gray-500 hover:text-white">
+     {/* --- FIXED BOTTOM NAVIGATION BAR --- */}
+      <div className="fixed bottom-0 left-0 right-0 bg-[#1e1e1e] p-2 flex justify-between border-t border-[#593B8B] z-50 h-20 max-w-md mx-auto">
+        <button className="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-white">
           <Users size={20} className="mb-1" />
           <span className="text-[10px]">Ref</span>
         </button>
-        <button className="flex flex-col items-center flex-1 py-2 text-gray-500 hover:text-white">
+        
+        <button className="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-white">
           <CheckSquare size={20} className="mb-1" />
           <span className="text-[10px]">Task</span>
         </button>
+        
         <button 
           onClick={() => setActiveTab('tap')}
-          className={`flex flex-col items-center flex-1 py-2 rounded-xl transition-colors ${activeTab === 'tap' ? 'bg-[#593B8B] text-white shadow-lg' : 'text-gray-500'}`}
+          className={`flex flex-col items-center flex-1 py-1 rounded-xl transition-colors ${activeTab === 'tap' ? 'bg-[#593B8B] text-white shadow-lg' : 'text-gray-500'}`}
         >
           <div className={`w-5 h-5 rounded-full bg-[#FBB44A] mb-1 border-2 border-[#1e1e1e] ${activeTab === 'tap' ? 'animate-pulse' : ''}`}></div>
           <span className="text-[10px]">Tap</span>
         </button>
+        
         <button 
           onClick={() => setActiveTab('boost')}
-          className={`flex flex-col items-center flex-1 py-2 rounded-xl transition-colors ${activeTab === 'boost' ? 'bg-[#593B8B] text-white shadow-lg' : 'text-gray-500'}`}
+          className={`flex flex-col items-center flex-1 py-1 rounded-xl transition-colors ${activeTab === 'boost' ? 'bg-[#593B8B] text-white shadow-lg' : 'text-gray-500'}`}
         >
           <Rocket size={20} className="mb-1" />
           <span className="text-[10px]">Boost</span>
         </button>
-        <button className="flex flex-col items-center flex-1 py-2 text-gray-500 hover:text-white">
+        
+        <button className="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-white">
           <BarChart3 size={20} className="mb-1" />
           <span className="text-[10px]">Stats</span>
         </button>
