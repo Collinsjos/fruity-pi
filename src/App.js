@@ -52,7 +52,7 @@ const App = () => {
           <div className="absolute inset-0 bg-yellow-500 rounded-full blur-[50px] opacity-15"></div>
           <img 
             src="/coin.png" 
-            className="w-40 h-40 md:w-40 md:h-40 drop-shadow-2xl relative z-10" 
+            className="w-40 h-32 md:w-32 md:h-40 drop-shadow-2xl relative z-10" 
             alt="Pi" 
             draggable="false" 
           />
