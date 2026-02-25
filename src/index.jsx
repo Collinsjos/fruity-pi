@@ -135,19 +135,19 @@ const App = () => {
       <div className="flex-1 overflow-hidden px-6 flex flex-col">
         
         {activeTab === 'tap' && (
-          <div className="flex flex-col items-center mt-8 flex-1 justify-between pb-24">
-            <div className="flex items-center gap-2 mb-2">
+          <div className="flex flex-col items-center mt-4 flex-1 justify-between pb-24">
+            <div className="flex items-center gap-2 mb-1">
               <div className="w-8 h-8 rounded-full shadow-[0_0_15px_#FBB44A]" style={{ backgroundColor: '#FBB44A' }}></div>
               <h1 className="text-5xl font-black text-white">{balance.toLocaleString()}</h1>
             </div>
             
-            <div className="flex items-center gap-1 text-white/60 text-sm mb-8">
+            <div className="flex items-center gap-1 text-white/60 text-sm mb-4">
               <Trophy size={14} style={{ color: '#FBB44A' }} />
               <span>Bronze {'>'}</span>
             </div>
 
             {/* THE COIN SECTION */}
-            <div className="flex-1 flex items-center justify-center w-full relative min-h-[300px]">
+            <div className="flex-1 flex items-center justify-center w-full relative min-h-[240px]">
               {isGuruActive && (
                 <div className="absolute inset-0 rounded-full blur-[100px] opacity-20 pointer-events-none" style={{ backgroundColor: '#FBB44A' }}></div>
               )}
@@ -155,14 +155,14 @@ const App = () => {
                 src="/coin.png" 
                 onPointerDown={handlePointerDown}
                 onTouchStart={handlePointerDown}
-                className="w-64 h-64 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer relative z-10" 
+                className="w-56 h-56 active:scale-95 transition-transform drop-shadow-2xl cursor-pointer relative z-10" 
                 alt="Pi" 
                 draggable="false" 
               />
             </div>
 
             {/* ENERGY BAR */}
-            <div className="w-full mt-4">
+            <div className="w-full mt-2">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-1 font-bold">
                   <Zap size={18} style={{ color: '#FBB44A', fill: '#FBB44A' }} className={isGuruActive ? "animate-pulse" : ""} />
