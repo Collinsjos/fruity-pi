@@ -17,15 +17,19 @@ const App = () => {
   const [guruCharges, setGuruCharges] = useState(3);
   const [isGuruActive, setIsGuruActive] = useState(false);
   const [clicks, setClicks] = useState([]);
-  const [showBotModal, setShowBotModal] = useState(true);
-  const [botEarnings] = useState(145550);
+  const [showIntroModal, setShowIntroModal] = useState(true);
 
   // Energy regeneration
   useEffect(() => {
     const timer = setInterval(() => {
       setEnergy((prev) => (prev < maxEnergy ? prev + 1 : prev));
     }, 1000);
-    return () => clearInterval(timer);
+    const collectBotEarnings = () => {
+    setBalance(prev => prev + botEarnings);
+    setShowBotModal(false);
+  };
+
+  return () => clearInterval(timer);
   }, [maxEnergy]);
 
   const handlePointerDown = (e) => {
@@ -103,37 +107,35 @@ const App = () => {
         </div>
       ))}
 
-      {/* TAP BOT MODAL */}
-      {showBotModal && (
-        <div className="absolute inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-[#2a2a2a] rounded-[2.5rem] p-8 flex flex-col items-center text-center relative border border-white/10 animate-in fade-in slide-in-from-bottom-10">
-            <button onClick={() => setShowBotModal(false)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors">
+      {/* INTRO MODAL (Editable Welcome Box) */}
+      {showIntroModal && (
+        <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-[#2a2a2a] rounded-[2.5rem] p-8 flex flex-col items-center text-center relative border border-white/10">
+            <button onClick={() => setShowIntroModal(false)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors">
               <X size={24} />
             </button>
             <div className="w-24 h-24 bg-[#593B8B] rounded-3xl flex items-center justify-center mb-6 shadow-2xl border border-[#FBB44A]/30">
-               <div className="text-5xl">🤖</div>
+               <div className="text-5xl">🎮</div>
             </div>
-            <h2 className="text-3xl font-black mb-2">Tap Bot</h2>
-            <p className="text-white/60 text-sm mb-6 px-4">While you were asleep, your Tap Bot earned some Pi for you ❤️</p>
-            <div className="flex items-center gap-2 mb-8">
-               <div className="w-6 h-6 rounded-full bg-[#FBB44A]" />
-               <span className="text-2xl font-black text-[#FBB44A]">{botEarnings.toLocaleString()}</span>
-            </div>
+            <h2 className="text-3xl font-black mb-2">Welcome to Pi Swap!</h2>
+            <p className="text-white/60 text-sm mb-6 px-4">
+              Tap the coin to earn Pi tokens. Upgrade your power and compete with friends!
+            </p>
             <button 
-              onClick={collectBotEarnings}
+              onClick={() => setShowIntroModal(false)}
               className="w-full py-4 bg-gradient-to-r from-[#593B8B] to-[#8A348E] rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform"
             >
-              Get it!
+              Let's Start!
             </button>
           </div>
         </div>
       )}
 
-      {/* MAIN CONTENT (Scrollable) */}
-      <div className="flex-1 overflow-y-auto pb-28 scrollbar-hide px-6">
+      {/* MAIN CONTENT (Fixed - No Scroll) */}
+      <div className="flex-1 overflow-hidden px-6 flex flex-col">
         
         {activeTab === 'tap' && (
-          <div className="flex flex-col items-center mt-8 h-full">
+          <div className="flex flex-col items-center mt-8 flex-1 justify-between pb-24">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-full shadow-[0_0_15px_#FBB44A]" style={{ backgroundColor: '#FBB44A' }}></div>
               <h1 className="text-5xl font-black text-white">{balance.toLocaleString()}</h1>
@@ -176,7 +178,7 @@ const App = () => {
         )}
 
         {activeTab === 'boost' && (
-          <div className="pt-8">
+          <div className="pt-8 overflow-y-auto scrollbar-hide pb-24 flex-1">
             <div className="flex flex-col items-center mb-8">
               <p className="text-white/60 text-sm mb-2">Your Balance</p>
               <div className="flex items-center gap-2">
@@ -234,7 +236,7 @@ const App = () => {
         )}
 
         {activeTab === 'ref' && (
-          <div className="pt-8 text-center">
+          <div className="pt-8 text-center flex-1 flex flex-col justify-center pb-24">
             <Users size={48} className="mx-auto mb-4 text-[#FBB44A]" />
             <h2 className="text-2xl font-black mb-2">Invite Friends</h2>
             <p className="text-white/60 text-sm mb-6">Get 10% of your friends' earnings!</p>
@@ -245,7 +247,7 @@ const App = () => {
         )}
 
         {activeTab === 'task' && (
-          <div className="pt-8">
+          <div className="pt-8 overflow-y-auto scrollbar-hide pb-24 flex-1">
             <h2 className="text-2xl font-black mb-6 text-center">Daily Tasks</h2>
             <div className="space-y-3">
               <TaskCard title="Join Telegram" reward={5000} />
@@ -256,7 +258,7 @@ const App = () => {
         )}
 
         {activeTab === 'stats' && (
-          <div className="pt-8">
+          <div className="pt-8 overflow-y-auto scrollbar-hide pb-24 flex-1">
             <h2 className="text-2xl font-black mb-6 text-center">Statistics</h2>
             <div className="space-y-4">
               <StatRow label="Total Earned" value={balance.toLocaleString()} />
