@@ -26,9 +26,86 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
+
+      /* Desktop block overlay */
+      #desktop-block {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #270657;
+        color: white;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family: sans-serif;
+        padding: 2rem;
+      }
+
+      #desktop-block .icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        animation: bounce 1.5s infinite;
+      }
+
+      #desktop-block h1 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin-bottom: 0.75rem;
+        color: #FBB44A;
+      }
+
+      #desktop-block p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1rem;
+        line-height: 1.6;
+        max-width: 360px;
+      }
+
+      #desktop-block .qr-hint {
+        margin-top: 2rem;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 1rem;
+        padding: 1rem 1.5rem;
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.4);
+      }
+
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-12px); }
+      }
+
+      /* Show block on desktop, hide app */
+      @media (min-width: 768px) {
+        #desktop-block {
+          display: flex;
+        }
+        #root {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body class="bg-[#270657] text-white">
+
+    <!-- Desktop block screen (hidden on mobile) -->
+    <div id="desktop-block">
+      <div class="icon">📱</div>
+      <h1>Mobile Only</h1>
+      <p>
+        Pi Swap is designed exclusively for mobile devices.<br />
+        Open this app on your phone for the best experience.
+      </p>
+      <div class="qr-hint">
+        💡 Scan the QR code or visit on your phone at<br />
+        <strong style="color: #FBB44A;">fruity-pi.vercel.app</strong>
+      </div>
+    </div>
+
+    <!-- App root (visible on mobile only) -->
     <div id="root"></div>
     <script type="module" src="/src/index.jsx"></script>
   </body>
