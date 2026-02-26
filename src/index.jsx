@@ -650,7 +650,7 @@ const App = () => {
 
         {activeTab === 'account' && (
           <div className="pt-8 overflow-y-auto scrollbar-hide pb-24 flex-1">
-            <h2 className="text-2xl font-black mb-6 text-center">Account</h2>
+            <h2 className="text-2xl font-black mb-4 text-center">Account</h2>
             <div className="space-y-2">
               <div className="bg-black/20 p-4 rounded-2xl border border-white/5">
                 <p className="text-white/40 text-xs mb-1">Your Player ID</p>
@@ -660,7 +660,7 @@ const App = () => {
               <StatRow label="Tap Power" value={`+${tapValue}`} />
               <StatRow label="Energy Limit" value={maxEnergy} />
               <StatRow label="Level" value={Math.floor(balance / 10000) + 1} />
-              <div className="bg-gradient-to-br from-[#FBB44A]/20 to-[#FBB44A]/5 border-2 border-[#FBB44A]/30 rounded-2xl p-4 mt-6">
+              <div className="bg-gradient-to-br from-[#FBB44A]/20 to-[#FBB44A]/5 border-2 border-[#FBB44A]/30 rounded-2xl p-3 mt-6">
                 <div className="text-center mb-4">
                   <p className="text-white/60 text-sm mb-2">Pi Coins Earned</p>
                   <div className="flex items-center justify-center gap-2 mb-2">
