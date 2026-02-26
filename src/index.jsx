@@ -10,8 +10,6 @@ const TASKS = [
   { id: 'telegram', title: 'Join Telegram', reward: 10000, link: 'https://t.me/your_telegram_channel', icon: '✈️' },
   { id: 'twitter', title: 'Follow Twitter', reward: 5000, link: 'https://twitter.com/your_twitter', icon: '🐦' },
   { id: 'youtube', title: 'Subscribe YouTube', reward: 5000, link: 'https://youtube.com/@your_channel', icon: '▶️' },
-  { id: 'instagram', title: 'Follow Instagram', reward: 5000, link: 'https://instagram.com/your_profile', icon: '📸' },
-  { id: 'discord', title: 'Join Discord', reward: 5000, link: 'https://discord.gg/your_invite', icon: '💬' },
 ];
 
 const App = () => {
