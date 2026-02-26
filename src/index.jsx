@@ -28,7 +28,7 @@ const App = () => {
   });
 
   const SITE_URL = 'https://pi-coin-two.vercel.app/';
-  const piCoinsEarned = parseFloat((balance * 0.1).toFixed(1));
+  const piCoinsEarned = parseFloat((balance * 0.001).toFixed(1));
   const MIN_WITHDRAWAL = 100;
   const canWithdraw = piCoinsEarned >= MIN_WITHDRAWAL;
 
