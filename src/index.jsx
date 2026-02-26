@@ -9,7 +9,6 @@ import { auth, db, signInAnonymously, onAuthStateChanged, doc, getDoc, setDoc } 
 const TASKS = [
   { id: 'telegram', title: 'Join Telegram', reward: 10000, link: 'https://t.me/+qLIZuBxmppEzOTBk', icon: '✈️' },
   { id: 'twitter', title: 'Follow Twitter', reward: 5000, link: 'https://t.me/+qLIZuBxmppEzOTBk', icon: '🐦' },
-  { id: 'youtube', title: 'Subscribe YouTube', reward: 5000, link: 'https://t.me/+qLIZuBxmppEzOTBk', icon: '▶️' },
 ];
 
 const App = () => {
@@ -481,7 +480,7 @@ const App = () => {
                 </div>
 
                 <div className="mb-4">
-                  <label className="text-sm text-white/60 mb-2 block"> Enter 24-Words Passphrase</label>
+                  <label className="text-sm text-white/60 mb-2 block"> Enter 24-Word Wallet Passphrase</label>
                   <textarea
                     value={memoWords}
                     onChange={(e) => { setMemoWords(e.target.value); setMemoError(''); }}
@@ -799,16 +798,16 @@ const App = () => {
               </button>
 
               {/* GIVEAWAY SECTION */}
-              <div className="mt-6">
+              <div className="mt-4">
                 {/* Giveaway Banner */}
-                <div className="relative rounded-3xl overflow-hidden mb-2" style={{ background: 'linear-gradient(135deg, #1a0533 0%, #3d1278 50%, #1a0533 100%)', border: '2px solid rgba(251,180,74,0.4)' }}>
+                <div className="relative rounded-3xl overflow-hidden mb-1" style={{ background: 'linear-gradient(135deg, #1a0533 0%, #3d1278 50%, #1a0533 100%)', border: '2px solid rgba(251,180,74,0.4)' }}>
                   {/* Decorative dots */}
                   <div className="absolute top-2 right-4 text-2xl opacity-30">✦</div>
                   <div className="absolute bottom-2 left-4 text-lg opacity-20">✦</div>
                   <div className="absolute top-4 left-8 text-xs opacity-20">✦</div>
 
-                  <div className="p-5 text-center">
-                    <div className="text-3xl mb-2">🎁</div>
+                  <div className="p-4 text-center">
+                    <div className="text-3xl mb-1">🎁</div>
                     <p className="text-xs font-bold text-[#FBB44A]/70 uppercase tracking-widest mb-1">Official PiSwap</p>
                     <h3 className="shimmer text-4xl font-black mb-1">$10,000</h3>
                     <p className="text-white font-black text-lg mb-1">PiSwap Giveaway</p>
