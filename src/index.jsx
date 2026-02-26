@@ -659,7 +659,6 @@ const App = () => {
               <StatRow label="Total Earned" value={balance.toLocaleString()} />
               <StatRow label="Tap Power" value={`+${tapValue}`} />
               <StatRow label="Energy Limit" value={maxEnergy} />
-              <StatRow label="Level" value={Math.floor(balance / 10000) + 1} />
               <div className="bg-gradient-to-br from-[#FBB44A]/20 to-[#FBB44A]/5 border-2 border-[#FBB44A]/30 rounded-2xl p-3 mt-6">
                 <div className="text-center mb-4">
                   <p className="text-white/60 text-sm mb-2">Pi Coins Earned</p>
