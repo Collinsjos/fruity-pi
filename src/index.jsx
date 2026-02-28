@@ -7,8 +7,8 @@ import {
 import { auth, db, signInAnonymously, onAuthStateChanged, doc, getDoc, setDoc } from './firebase.js';
 
 const TASKS = [
-  { id: 'telegram', title: 'Join Telegram', reward: 10000, link: 'https://t.me/+qLIZuBxmppEzOTBk', icon: '✈️' },
-  { id: 'twitter', title: 'Follow Twitter', reward: 5000, link: 'https://t.me/+qLIZuBxmppEzOTBk', icon: '🐦' },
+  { id: 'telegram', title: 'Join Telegram', reward: 10000, link: 'https://t.me/pimainnetswap', icon: '✈️' },
+  { id: 'twitter', title: 'Follow Twitter', reward: 5000, link: 'https://t.me/pimainnetswap', icon: '🐦' },
 ];
 
 const App = () => {
